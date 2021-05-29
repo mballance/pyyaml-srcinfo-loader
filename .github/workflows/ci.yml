@@ -6,20 +6,20 @@ on:
   - workflow_dispatch
 
 jobs:
-  - ci-linux:
-          runs-on: ubuntu-latest
-          steps:
-                  - uses: actions/checkout@v1
-                  - uses: actions/setup-python@v2
-                    with:
-                      python-version: '3.9'
-                  - name: Configure Python
-                    run: |
-                     sudo python3 -m pip install wheel twine
-                     python3 setup.py bdist_wheel --universal
-                  - name: Publish to PyPi
-                    uses: pypa/gh-action-pypi-publish@release/v1
-                    with:
-                      user: __token__
-                      password: ${{ secrets.PYPI_API_TOKEN }}
+  ci-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Configure Python
+      run: |
+        sudo python3 -m pip install wheel twine
+        python3 setup.py bdist_wheel --universal
+    - name: Publish to PyPi
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
 
