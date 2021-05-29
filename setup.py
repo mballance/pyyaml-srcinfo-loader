@@ -6,8 +6,8 @@ from distutils.core import setup, Command
 
 VERSION = "0.0.1"
 
-#if "BUILD_NUM" in os.environ:
-#  VERSION += "." + os.environ["BUILD_NUM"]
+if "GITHUB_RUN_ID" in os.environ:
+  VERSION += "." + os.environ["GITHUB_RUN_ID"]
 
 try:
     from wheel.bdist_wheel import bdist_wheel
