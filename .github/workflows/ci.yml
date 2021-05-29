@@ -15,7 +15,8 @@ jobs:
         python-version: '3.9'
     - name: Configure Python
       run: |
-        sudo python3 -m pip install wheel twine
+        sudo python3 -m pip install wheel twine pyyaml
+        sudo python3 -m pip install setuptools --upgrade
         python3 setup.py bdist_wheel --universal
     - name: Publish to PyPi
       uses: pypa/gh-action-pypi-publish@release/v1
