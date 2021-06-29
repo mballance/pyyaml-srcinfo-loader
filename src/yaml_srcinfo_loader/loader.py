@@ -17,6 +17,8 @@ from yaml_srcinfo_loader.srcinfo import SrcInfoInt, SrcInfoStr, SrcInfo, \
 class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
     """YAML loader that annotates lineno/linepos information onto returned elements"""
     
+    DEBUG = 0
+    
     class LineDict(dict):
         pass
     
@@ -27,6 +29,10 @@ class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
         Composer.__init__(self)
         FullConstructor.__init__(self)
         Resolver.__init__(self)
+
+        Loader.add_constructor(
+            'tag:yaml.org,2002:map', 
+            Loader.construct_yaml_map)
         
         self.filename = None
 
@@ -58,6 +64,16 @@ class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
 #         
 #         return ret
 
+    def construct_yaml_map(self, node):
+        if Loader.DEBUG > 0:
+            print("construct_yaml_map")
+        data = SrcInfoDict()
+        yield data
+        value = self.construct_mapping(node)
+        if Loader.DEBUG > 0:
+            print("data.update")
+        data.update(value)
+
     def construct_mapping(self, node, deep=False):
         obj = FullConstructor.construct_mapping(self, node, deep=deep)
         ret = SrcInfoDict()
@@ -66,8 +82,10 @@ class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
         for k in obj.keys():
             ret[k] = obj[k]
             
-        print("construct_mapping: " + str(ret) + " " + str(type(ret)))
-        print("srcinfo: " + str(ret.srcinfo))
+        if Loader.DEBUG > 0:
+            print("construct_mapping: " + str(ret) + " " + str(type(ret)))
+            print("srcinfo: " + str(ret.srcinfo) + " type: " + str(type(ret)))
+#        raise Exception("construct_mapping")
         return ret
     
     def construct_sequence(self, node, deep=False):
@@ -77,7 +95,6 @@ class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
         
         for e in obj:
             ret.append(e)
-        
         return ret
     
     def construct_scalar(self, node):
@@ -101,4 +118,4 @@ class Loader(Reader, Scanner, Parser, Composer, FullConstructor, Resolver):
                 node.__linepos__)
         else:
             obj.srcinfo = SrcInfo()
-            
+

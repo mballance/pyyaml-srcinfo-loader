@@ -21,6 +21,12 @@ class SrcInfo(object):
 class SrcInfoDict(dict):        
     pass
 
+def dict_update(self, v):
+    dict.update(self,v)
+    self.srcinfo = v.srcinfo
+    
+SrcInfoDict.update = dict_update
+
 class SrcInfoList(list):
     pass
         
